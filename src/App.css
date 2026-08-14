@@ -843,10 +843,25 @@ footer {
 }
 
 .plans-section {
+  position: relative;
+  isolation: isolate;
   background:
     radial-gradient(circle at 18% 10%, rgba(255, 77, 87, 0.14), transparent 24rem),
+    radial-gradient(circle at 88% 22%, rgba(143, 180, 214, 0.12), transparent 24rem),
     linear-gradient(180deg, #151515, #202020 48%, #141414);
   color: #f6f7fb;
+}
+
+.plans-section::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.55;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 58px 58px;
+  content: "";
 }
 
 .section-heading {
@@ -867,17 +882,66 @@ footer {
   line-height: 1;
 }
 
+.catalog-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+}
+
+.catalog-heading .section-heading {
+  margin-bottom: 0;
+}
+
+.catalog-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(143, 180, 214, 0.18);
+  border-radius: 999px;
+  color: #dce9f5;
+  background: rgba(143, 180, 214, 0.1);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.catalog-count svg {
+  color: #8fb4d6;
+}
+
+.catalog-count strong {
+  color: #ffffff;
+  font-size: 18px;
+}
+
 .plan-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  gap: 20px;
+}
+
+.catalog-console {
+  margin: -4px 0 22px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)),
+    rgba(255, 255, 255, 0.055);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(16px);
 }
 
 .catalog-toolbar {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 240px;
   gap: 12px;
-  margin: -6px 0 16px;
+  margin: 0 0 12px;
 }
 
 .search-field,
@@ -902,11 +966,12 @@ footer {
 
 .catalog-toolbar input,
 .catalog-toolbar select {
-  min-height: 48px;
+  min-height: 50px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   color: #f6f7fb;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(10, 10, 10, 0.34);
   padding-left: 42px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .catalog-toolbar input:focus,
@@ -927,8 +992,9 @@ footer {
   padding: 10px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 8px;
-  background: #202020;
+  background: rgba(26, 26, 26, 0.98);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(14px);
 }
 
 .search-suggestions button {
@@ -964,7 +1030,7 @@ footer {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin: 0 0 18px;
+  margin: 0;
 }
 
 .trust-strip span {
@@ -989,16 +1055,17 @@ footer {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin: -6px 0 24px;
+  margin: 0 0 24px;
+  padding: 2px 0;
 }
 
 .category-filter button {
-  min-height: 40px;
+  min-height: 42px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 999px;
   color: #f6f7fb;
-  background: rgba(255, 255, 255, 0.08);
-  padding: 0 14px;
+  background: rgba(255, 255, 255, 0.075);
+  padding: 0 15px;
   font: inherit;
   font-size: 14px;
   font-weight: 850;
@@ -1013,23 +1080,27 @@ footer {
 .category-filter button:hover,
 .category-filter button.active {
   transform: translateY(-2px);
-  border-color: #30445a;
+  border-color: rgba(143, 180, 214, 0.38);
   color: #ffffff;
-  background: #30445a;
-  box-shadow: 0 12px 26px rgba(48, 68, 90, 0.18);
+  background: linear-gradient(135deg, #30445a, #243242);
+  box-shadow: 0 16px 34px rgba(48, 68, 90, 0.28);
 }
 
 .plan-card {
   display: flex;
   flex-direction: column;
-  min-height: 360px;
+  min-height: 352px;
   overflow: hidden;
   padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: #f6f7fb;
-  background: rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.045)),
+    rgba(255, 255, 255, 0.055);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.18);
   text-align: left;
   position: relative;
+  backdrop-filter: blur(10px);
 }
 
 .plan-card::after {
@@ -1059,7 +1130,7 @@ footer {
   border: 0;
   color: inherit;
   background: transparent;
-  padding: 18px;
+  padding: 16px;
   text-align: left;
   text-decoration: none;
   position: relative;
@@ -1069,14 +1140,15 @@ footer {
 .brand-logo-frame {
   position: relative;
   display: grid;
-  height: 96px;
-  margin: -4px -4px 14px;
+  height: 86px;
+  margin: -2px -2px 14px;
   place-items: center;
   overflow: hidden;
   border-radius: 8px;
   background:
-    linear-gradient(135deg, rgba(255, 77, 87, 0.14), transparent),
-    rgba(255, 255, 255, 0.08);
+    radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.18), transparent 3.6rem),
+    linear-gradient(135deg, rgba(255, 77, 87, 0.12), rgba(143, 180, 214, 0.06)),
+    rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 14px;
 }
@@ -1092,8 +1164,8 @@ footer {
 .brand-logo-frame img {
   position: relative;
   z-index: 1;
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
   border-radius: 16px;
   background: #ffffff;
@@ -1114,8 +1186,8 @@ footer {
   left: 50%;
   top: 50%;
   display: grid;
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   place-items: center;
   border-radius: 16px;
   color: #ffffff;
@@ -1128,8 +1200,9 @@ footer {
 
 .plan-card.active,
 .plan-card:hover {
-  border-color: #3f5f7f;
-  box-shadow: 0 18px 42px rgba(63, 95, 127, 0.16);
+  transform: translateY(-4px);
+  border-color: rgba(143, 180, 214, 0.42);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
 }
 
 .card-topline {
@@ -1142,7 +1215,7 @@ footer {
 
 .availability {
   width: fit-content;
-  padding: 6px 8px;
+  padding: 5px 8px;
   border-radius: 999px;
   color: #065f46;
   background: #d1fae5;
@@ -1168,7 +1241,7 @@ footer {
 
 .vibe-meter span {
   width: 6px;
-  height: 17px;
+  height: 15px;
   border-radius: 999px;
   background: #3f5f7f;
   transform-origin: bottom;
@@ -1185,7 +1258,7 @@ footer {
 
 .plan-badge {
   width: fit-content;
-  padding: 6px 8px;
+  padding: 5px 8px;
   border-radius: 999px;
   color: #ffffff;
   background: #171717;
@@ -1203,15 +1276,15 @@ footer {
 }
 
 .plan-card h3 {
-  margin: 16px 0 8px;
-  font-size: 25px;
+  margin: 14px 0 8px;
+  font-size: 23px;
   line-height: 1.05;
 }
 
 .plan-card strong {
   color: #ffffff;
   font-family: var(--font-body);
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 950;
 }
 
@@ -1238,7 +1311,7 @@ footer {
 }
 
 .product-description {
-  min-height: 48px;
+  min-height: 42px;
   color: #d7d7dc;
   font-size: 14px;
   line-height: 1.45;
@@ -1247,7 +1320,7 @@ footer {
 .plan-card ul {
   display: grid;
   gap: 8px;
-  margin: 14px 0 0;
+  margin: 12px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -1282,7 +1355,7 @@ footer {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
-  padding: 0 18px 18px;
+  padding: 0 16px 16px;
   position: relative;
   z-index: 1;
 }
@@ -2205,6 +2278,55 @@ footer {
   margin: 0;
 }
 
+.add-product-panel {
+  align-self: start;
+  gap: 14px;
+  padding: 18px;
+  background:
+    linear-gradient(135deg, rgba(63, 95, 127, 0.12), transparent),
+    rgba(255, 255, 255, 0.07);
+}
+
+.compact-panel-heading {
+  display: grid;
+  gap: 4px;
+}
+
+.compact-panel-heading p {
+  margin: 0;
+  color: #cfcfd4;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.add-product-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.add-product-fields .wide-field {
+  grid-column: 1 / -1;
+}
+
+.add-product-panel label {
+  gap: 6px;
+  font-size: 13px;
+}
+
+.add-product-panel input,
+.add-product-panel select {
+  min-height: 42px;
+}
+
+.add-product-panel button {
+  min-height: 42px;
+  justify-self: start;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: #30445a;
+}
+
 .price-row {
   grid-template-columns: minmax(0, 1fr) 150px;
   align-items: center;
@@ -2743,6 +2865,13 @@ footer {
   background: #fffdf8;
 }
 
+.theme-light .plans-section::before {
+  opacity: 0.45;
+  background-image:
+    linear-gradient(rgba(88, 73, 60, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(88, 73, 60, 0.05) 1px, transparent 1px);
+}
+
 .theme-light .bundle-section {
   color: #211b17;
   background:
@@ -2831,6 +2960,25 @@ footer {
 .theme-light .multi-price-row span {
   color: #2f4c68;
   background: rgba(63, 95, 127, 0.1);
+}
+
+.theme-light .catalog-console {
+  border-color: rgba(47, 38, 31, 0.12);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(255, 250, 243, 0.68)),
+    rgba(255, 255, 255, 0.68);
+  box-shadow: 0 24px 60px rgba(47, 38, 31, 0.08);
+}
+
+.theme-light .catalog-count {
+  border-color: rgba(63, 95, 127, 0.16);
+  color: #2f4c68;
+  background: rgba(63, 95, 127, 0.08);
+  box-shadow: 0 14px 32px rgba(47, 38, 31, 0.06);
+}
+
+.theme-light .catalog-count strong {
+  color: #211b17;
 }
 
 .theme-light .trust-strip span {
@@ -2964,7 +3112,10 @@ footer {
 .theme-light .plan-card {
   border-color: #e1e1e6;
   color: #1b1b1f;
-  background: #ffffff;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 250, 243, 0.72)),
+    #ffffff;
+  box-shadow: 0 18px 42px rgba(47, 38, 31, 0.08);
 }
 
 .theme-light .plan-card::after {
@@ -2979,6 +3130,7 @@ footer {
 .theme-light .brand-logo-frame {
   border-color: #ececf0;
   background:
+    radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.82), transparent 3.6rem),
     linear-gradient(135deg, rgba(255, 49, 60, 0.08), transparent),
     #f7f7f8;
 }
@@ -3053,6 +3205,15 @@ footer {
   .checkout-steps {
     grid-template-columns: 1fr;
   }
+
+  .catalog-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .catalog-count {
+    min-height: 40px;
+  }
 }
 
 @media (max-width: 680px) {
@@ -3096,6 +3257,31 @@ footer {
   .catalog-toolbar,
   .card-actions {
     grid-template-columns: 1fr;
+  }
+
+  .catalog-console {
+    padding: 12px;
+  }
+
+  .catalog-heading {
+    gap: 12px;
+  }
+
+  .catalog-count {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .plan-pick-zone {
+    padding: 14px;
+  }
+
+  .plan-card h3 {
+    font-size: 22px;
+  }
+
+  .plan-card strong {
+    font-size: 24px;
   }
 
   .category-filter {
@@ -3163,6 +3349,24 @@ footer {
 
   .price-row {
     grid-template-columns: 1fr;
+  }
+
+  .admin-grid {
+    gap: 14px;
+    padding-inline: 14px;
+  }
+
+  .add-product-panel {
+    padding: 14px;
+  }
+
+  .add-product-fields {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .add-product-panel button {
+    width: 100%;
   }
 
   .footer-details {

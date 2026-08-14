@@ -1,4 +1,11 @@
-import { ArrowUpDown, Clock3, MessageCircle, Search, ShieldCheck } from 'lucide-react'
+import {
+  ArrowUpDown,
+  Clock3,
+  MessageCircle,
+  Search,
+  ShieldCheck,
+  Sparkles,
+} from 'lucide-react'
 import { categories, durationLabels } from '../data/products.js'
 import ProductCard from './ProductCard.jsx'
 
@@ -51,66 +58,75 @@ export default function Services({
 
   return (
     <section className="plans-section" id="plans">
-      <div className="section-heading">
-        <span>Catalog</span>
-        <h2>Pick your premium pass.</h2>
+      <div className="catalog-heading">
+        <div className="section-heading">
+          <span>Catalog</span>
+          <h2>Pick your premium pass.</h2>
+        </div>
+        <div className="catalog-count">
+          <Sparkles size={17} aria-hidden="true" />
+          <strong>{products.length}</strong>
+          <span>{products.length === 1 ? 'match' : 'matches'} ready</span>
+        </div>
       </div>
 
-      <div className="catalog-toolbar">
-        <label className="search-field">
-          <Search size={18} aria-hidden="true" />
-          <input
-            type="search"
-            placeholder="Search Netflix, VPN, AI, Canva..."
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-          />
-          {suggestions.length > 0 && (
-            <div className="search-suggestions">
-              {suggestions.map((product) => (
-                <button
-                  key={product.id}
-                  type="button"
-                  onClick={() => {
-                    setSearchTerm(product.name)
-                    setActiveCategory('All')
-                    setSelectedId(product.id)
-                  }}
-                >
-                  <span>{product.name}</span>
-                  <small>{product.category}</small>
-                </button>
-              ))}
-            </div>
-          )}
-        </label>
-        <label className="sort-field">
-          <ArrowUpDown size={18} aria-hidden="true" />
-          <select
-            value={sortBy}
-            onChange={(event) => setSortBy(event.target.value)}
-          >
-            <option value="featured">Featured</option>
-            <option value="price-low">Price low to high</option>
-            <option value="price-high">Price high to low</option>
-            <option value="duration">Duration</option>
-          </select>
-        </label>
-      </div>
+      <div className="catalog-console">
+        <div className="catalog-toolbar">
+          <label className="search-field">
+            <Search size={18} aria-hidden="true" />
+            <input
+              type="search"
+              placeholder="Search Netflix, VPN, AI, Canva..."
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+            />
+            {suggestions.length > 0 && (
+              <div className="search-suggestions">
+                {suggestions.map((product) => (
+                  <button
+                    key={product.id}
+                    type="button"
+                    onClick={() => {
+                      setSearchTerm(product.name)
+                      setActiveCategory('All')
+                      setSelectedId(product.id)
+                    }}
+                  >
+                    <span>{product.name}</span>
+                    <small>{product.category}</small>
+                  </button>
+                ))}
+              </div>
+            )}
+          </label>
+          <label className="sort-field">
+            <ArrowUpDown size={18} aria-hidden="true" />
+            <select
+              value={sortBy}
+              onChange={(event) => setSortBy(event.target.value)}
+            >
+              <option value="featured">Featured</option>
+              <option value="price-low">Price low to high</option>
+              <option value="price-high">Price high to low</option>
+              <option value="duration">Duration</option>
+            </select>
+          </label>
+        </div>
 
-      <div className="trust-strip" aria-label="Trust and order highlights">
-        <span>
-          <ShieldCheck size={17} aria-hidden="true" />
-          Manually verified access
-        </span>
-        <span>
-          <MessageCircle size={17} aria-hidden="true" />
-          WhatsApp order support
-        </span>
-        <span>
-          <Clock3 size={17} aria-hidden="true" />
-          Renewal reminders
-        </span>
+        <div className="trust-strip" aria-label="Trust and order highlights">
+          <span>
+            <ShieldCheck size={17} aria-hidden="true" />
+            Manually verified access
+          </span>
+          <span>
+            <MessageCircle size={17} aria-hidden="true" />
+            WhatsApp order support
+          </span>
+          <span>
+            <Clock3 size={17} aria-hidden="true" />
+            Renewal reminders
+          </span>
+        </div>
       </div>
 
       <div className="category-filter" aria-label="Filter products">

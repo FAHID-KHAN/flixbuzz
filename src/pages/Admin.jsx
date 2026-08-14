@@ -123,74 +123,79 @@ export default function AdminPage({
           ))}
         </div>
 
-        <form className="admin-panel" onSubmit={handleAddProduct}>
-          <h2>Add product</h2>
-          <label>
-            Product name
-            <input
-              type="text"
-              placeholder="Buzz Family"
-              value={newProduct.name}
-              onChange={(event) =>
-                setNewProduct((current) => ({
-                  ...current,
-                  name: event.target.value,
-                }))
-              }
-            />
-          </label>
-          <label>
-            Category
-            <select
-              value={newProduct.category}
-              onChange={(event) =>
-                setNewProduct((current) => ({
-                  ...current,
-                  category: event.target.value,
-                }))
-              }
-            >
-              {categories
-                .filter((category) => category !== 'All')
-                .map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-            </select>
-          </label>
-          <label>
-            Duration
-            <select
-              value={newProduct.duration}
-              onChange={(event) =>
-                setNewProduct((current) => ({
-                  ...current,
-                  duration: Number(event.target.value),
-                }))
-              }
-            >
-              <option value="1">1 month</option>
-              <option value="3">3 months</option>
-              <option value="6">6 months</option>
-              <option value="12">12 months</option>
-            </select>
-          </label>
-          <label>
-            Price
-            <input
-              type="number"
-              min="0"
-              placeholder="1999"
-              value={newProduct.price}
-              onChange={(event) =>
-                setNewProduct((current) => ({
-                  ...current,
-                  price: event.target.value,
-                }))
-              }
-            />
-          </label>
+        <form className="admin-panel add-product-panel" onSubmit={handleAddProduct}>
+          <div className="compact-panel-heading">
+            <h2>Add product</h2>
+            <p>Create a quick catalog item, then save the catalog.</p>
+          </div>
+          <div className="add-product-fields">
+            <label className="wide-field">
+              Product name
+              <input
+                type="text"
+                placeholder="Buzz Family"
+                value={newProduct.name}
+                onChange={(event) =>
+                  setNewProduct((current) => ({
+                    ...current,
+                    name: event.target.value,
+                  }))
+                }
+              />
+            </label>
+            <label>
+              Category
+              <select
+                value={newProduct.category}
+                onChange={(event) =>
+                  setNewProduct((current) => ({
+                    ...current,
+                    category: event.target.value,
+                  }))
+                }
+              >
+                {categories
+                  .filter((category) => category !== 'All')
+                  .map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+              </select>
+            </label>
+            <label>
+              Duration
+              <select
+                value={newProduct.duration}
+                onChange={(event) =>
+                  setNewProduct((current) => ({
+                    ...current,
+                    duration: Number(event.target.value),
+                  }))
+                }
+              >
+                <option value="1">1 month</option>
+                <option value="3">3 months</option>
+                <option value="6">6 months</option>
+                <option value="12">12 months</option>
+              </select>
+            </label>
+            <label>
+              Price
+              <input
+                type="number"
+                min="0"
+                placeholder="1999"
+                value={newProduct.price}
+                onChange={(event) =>
+                  setNewProduct((current) => ({
+                    ...current,
+                    price: event.target.value,
+                  }))
+                }
+              />
+            </label>
+          </div>
           <button type="submit">
             <Plus size={18} aria-hidden="true" />
             Add product
