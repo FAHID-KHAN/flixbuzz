@@ -37,7 +37,7 @@ There is no React Router installed. Navigation uses regular anchor links.
 
 State is held in `App.jsx`:
 
-- `products` - initialized from `initialProducts`; admin edits update this in memory.
+- `products` - initialized from `localStorage` key `flixbuzz-products` when available, otherwise from `initialProducts`.
 - `selectedId` - selected product for hero/preview behavior.
 - `activeCategory` - catalog category filter.
 - `sortBy` - catalog sorting mode.
@@ -73,6 +73,14 @@ src/data/brandLogos.js
 ```
 
 Product logos are currently loaded via Google favicon URLs. If logos fail to load or exact brand assets are required, replace this with local image assets.
+
+Admin catalog edits are currently saved in browser `localStorage` under:
+
+```text
+flixbuzz-products
+```
+
+Admins must click **Save catalog** in `/admin` to write price edits, availability edits, and newly added products to this key. After saving, changes show on the public website after navigating away from `/admin` or refreshing in the same browser. This is still browser-local and not shared across devices.
 
 ## Main Pages
 
@@ -193,7 +201,7 @@ If the business number changes, update:
 
 - No real backend.
 - No database.
-- No persistent admin catalog edits.
+- Admin catalog edits are browser-local only.
 - No real order tracking persistence.
 - No real authentication.
 - No payment gateway.
@@ -204,7 +212,7 @@ If the business number changes, update:
 
 1. Add a database for products, orders, and reviews.
 2. Replace local admin passcode with real authentication.
-3. Persist admin price/product edits.
+3. Persist admin price/product edits in a real database.
 4. Add order status lookup by order ID and phone.
 5. Add approved review publishing.
 6. Add environment variables for WhatsApp/contact configuration.

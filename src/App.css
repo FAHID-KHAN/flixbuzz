@@ -1698,7 +1698,8 @@ footer {
 }
 
 .login-card > button,
-.admin-panel button {
+.admin-panel button,
+.admin-save-actions button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2094,6 +2095,38 @@ footer {
 .admin-topbar h1 {
   margin: 4px 0 0;
   font-size: 32px;
+}
+
+.admin-save-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-save-actions small {
+  min-height: 34px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-weight: 900;
+}
+
+.admin-save-actions small.saved {
+  color: #d1fae5;
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.admin-save-actions small.unsaved {
+  color: #fef3c7;
+  background: rgba(245, 158, 11, 0.16);
+}
+
+.admin-save-actions button {
+  min-height: 42px;
+  border-radius: 8px;
+  padding: 0 14px;
+  cursor: pointer;
 }
 
 .admin-grid {

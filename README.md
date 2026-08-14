@@ -87,7 +87,7 @@ Brand favicon/logo mappings live in:
 src/data/brandLogos.js
 ```
 
-The admin page can edit prices and add products in memory while the app is open. Those admin edits are not persisted after refresh because there is no database yet.
+The admin page can edit prices, update availability, and add products. Click **Save catalog** in `/admin` to write those changes to the browser's `localStorage` under `flixbuzz-products`. After saving, the public website uses the updated catalog after navigation or refresh in the same browser.
 
 ## WhatsApp Flow
 
@@ -103,7 +103,7 @@ Orders and reviews are processed manually through WhatsApp:
 - No database yet.
 - No payment gateway.
 - No persistent order storage.
-- Admin edits are in-memory only.
+- Admin catalog edits are browser-local only until a database is added.
 - Admin passcode is browser-local only and not production-grade security.
 - Product logo images use external favicon URLs, so they depend on network access.
 

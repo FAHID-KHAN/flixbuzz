@@ -1,12 +1,15 @@
-import { Eye, EyeOff, LockKeyhole, Plus } from 'lucide-react'
+import { Eye, EyeOff, LockKeyhole, Plus, Save } from 'lucide-react'
 import { categories, durationLabels } from '../data/products.js'
 
 export default function AdminPage({
+  catalogSaveMessage,
   handleAvailabilityChange,
   handleAddProduct,
   handleLogin,
   handleOrderStatusChange,
   handlePriceChange,
+  handleSaveCatalog,
+  hasCatalogChanges,
   isLoggedIn,
   loginError,
   newProduct,
@@ -70,7 +73,16 @@ export default function AdminPage({
           <span>FlixBuzz Admin</span>
           <h1>Price lab and product vault</h1>
         </div>
-        <a href="/">View website</a>
+        <div className="admin-save-actions">
+          <small className={hasCatalogChanges ? 'unsaved' : 'saved'}>
+            {catalogSaveMessage}
+          </small>
+          <button type="button" onClick={handleSaveCatalog}>
+            <Save size={18} aria-hidden="true" />
+            Save catalog
+          </button>
+          <a href="/">View website</a>
+        </div>
       </nav>
 
       <section className="admin-grid">

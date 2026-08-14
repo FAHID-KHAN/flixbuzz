@@ -8,8 +8,38 @@ import ReviewPage from './pages/ReviewPage.jsx'
 import LoadingScreen from './components/LoadingScreen.jsx'
 import { durationLabels, initialProducts } from './data/products.js'
 
+const catalogStorageKey = 'flixbuzz-products'
+
+const loadSavedProducts = () => {
+  try {
+    const savedProducts = JSON.parse(
+      window.localStorage.getItem(catalogStorageKey) || '[]',
+    )
+
+    if (!Array.isArray(savedProducts) || savedProducts.length === 0) {
+      return initialProducts
+    }
+
+    const savedProductMap = new Map(
+      savedProducts.map((product) => [product.id, product]),
+    )
+    const initialProductIds = new Set(initialProducts.map((product) => product.id))
+    const mergedProducts = initialProducts.map((product) => ({
+      ...product,
+      ...savedProductMap.get(product.id),
+    }))
+    const customProducts = savedProducts.filter(
+      (product) => !initialProductIds.has(product.id),
+    )
+
+    return [...mergedProducts, ...customProducts]
+  } catch {
+    return initialProducts
+  }
+}
+
 function App() {
-  const [products, setProducts] = useState(initialProducts)
+  const [products, setProducts] = useState(loadSavedProducts)
   const [selectedId, setSelectedId] = useState(initialProducts[0].id)
   const [activeCategory, setActiveCategory] = useState('All')
   const [sortBy, setSortBy] = useState('featured')
@@ -40,6 +70,10 @@ function App() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loginError, setLoginError] = useState('')
+  const [hasCatalogChanges, setHasCatalogChanges] = useState(false)
+  const [catalogSaveMessage, setCatalogSaveMessage] = useState(
+    'Catalog is loaded from saved browser data.',
+  )
   const [newProduct, setNewProduct] = useState({
     name: '',
     category: 'Streaming',
@@ -114,6 +148,8 @@ function App() {
   }, [activeCategory, products, searchTerm, sortBy])
 
   const handlePriceChange = (id, price) => {
+    setHasCatalogChanges(true)
+    setCatalogSaveMessage('Unsaved catalog changes.')
     setProducts((currentProducts) =>
       currentProducts.map((product) =>
         product.id === id ? { ...product, price: Number(price) } : product,
@@ -122,6 +158,8 @@ function App() {
   }
 
   const handleAvailabilityChange = (id, availability) => {
+    setHasCatalogChanges(true)
+    setCatalogSaveMessage('Unsaved catalog changes.')
     setProducts((currentProducts) =>
       currentProducts.map((product) =>
         product.id === id ? { ...product, availability } : product,
@@ -174,6 +212,8 @@ function App() {
     }
 
     setProducts((currentProducts) => [...currentProducts, nextProduct])
+    setHasCatalogChanges(true)
+    setCatalogSaveMessage('Unsaved catalog changes.')
     setActiveCategory(newProduct.category)
     setSelectedId(nextProduct.id)
     setVerification((current) => ({ ...current, productId: nextProduct.id }))
@@ -208,6 +248,12 @@ function App() {
     setLoginError('Wrong admin passcode for this browser.')
   }
 
+  const handleSaveCatalog = () => {
+    window.localStorage.setItem(catalogStorageKey, JSON.stringify(products))
+    setHasCatalogChanges(false)
+    setCatalogSaveMessage('Catalog saved. Public website will use these prices.')
+  }
+
   if (isLoading && route !== '/admin') {
     return <LoadingScreen theme={theme} />
   }
@@ -215,10 +261,13 @@ function App() {
   if (route === '/admin') {
     return (
       <AdminPage
+        catalogSaveMessage={catalogSaveMessage}
         handleAvailabilityChange={handleAvailabilityChange}
         handleAddProduct={handleAddProduct}
         handleLogin={handleLogin}
         handlePriceChange={handlePriceChange}
+        handleSaveCatalog={handleSaveCatalog}
+        hasCatalogChanges={hasCatalogChanges}
         isLoggedIn={isLoggedIn}
         loginError={loginError}
         newProduct={newProduct}
