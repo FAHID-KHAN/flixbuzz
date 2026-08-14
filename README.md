@@ -1,16 +1,110 @@
-# React + Vite
+# FlixBuzz
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+FlixBuzz is a React + Vite business website for selling verified subscription services through WhatsApp. It includes a public catalog, product detail pages, checkout inquiry flow, bundle offers, reviews, light/dark theme support, and a hidden admin endpoint for editing local catalog state.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Premium subscription catalog with categories, sorting, search, and live suggestions.
+- Product detail pages at `/product?id=<productId>`.
+- WhatsApp checkout flow at `/checkout?id=<productId>`.
+- Payment method selection for bKash, Nagad, bank transfer, or WhatsApp discussion.
+- Featured best-seller section for popular products.
+- Bundle offers for student, entertainment, and creator packs.
+- Leave-a-review page at `/review`.
+- Order verification section on the home page.
+- Hidden admin route at `/admin`.
+- First-run local admin passcode setup.
+- Dark/light theme toggle persisted in `localStorage`.
+- Quirky first-load screen, animated hero, and subscription logo rail.
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19
+- Vite 8
+- lucide-react icons
+- Plain CSS in `src/App.css`
+- Static product data in `src/data/products.js`
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the local dev server:
+
+```bash
+npm run dev
+```
+
+Build for production:
+
+```bash
+npm run build
+```
+
+Preview the production build:
+
+```bash
+npm run preview
+```
+
+Run lint checks:
+
+```bash
+npm run lint
+```
+
+## Routes
+
+- `/` - Home page with hero, subscriptions, featured products, bundles, catalog, verification, reviews, FAQ, and footer.
+- `/product?id=<id>` - Product detail page.
+- `/checkout?id=<id>` - Checkout inquiry page that opens WhatsApp with an order message.
+- `/review` - Customer review submission page that opens WhatsApp.
+- `/admin` - Admin panel route. This is not linked from the main website.
+
+## Admin Access
+
+The admin page does not use a hardcoded password.
+
+On first visit to `/admin`, enter a passcode with at least 8 characters. That passcode is saved in this browser's `localStorage` under `flixbuzz-admin-passcode`. Later admin logins on the same browser must use the same passcode.
+
+This is suitable only for the current static/local prototype. For production, replace it with real server-side authentication.
+
+## Product Data
+
+Catalog data lives in:
+
+```text
+src/data/products.js
+```
+
+Brand favicon/logo mappings live in:
+
+```text
+src/data/brandLogos.js
+```
+
+The admin page can edit prices and add products in memory while the app is open. Those admin edits are not persisted after refresh because there is no database yet.
+
+## WhatsApp Flow
+
+Orders and reviews are processed manually through WhatsApp:
+
+- Business WhatsApp number: `+8801580744443`
+- Checkout creates a formatted order message with product, plan, price, payment method, name, phone, and notes.
+- Review page creates a formatted review message for manual approval.
+- Bundle cards create a formatted bundle inquiry message.
+
+## Important Limitations
+
+- No database yet.
+- No payment gateway.
+- No persistent order storage.
+- Admin edits are in-memory only.
+- Admin passcode is browser-local only and not production-grade security.
+- Product logo images use external favicon URLs, so they depend on network access.
+
+See [CONTEXT.md](./CONTEXT.md) for architecture notes and future implementation guidance.
