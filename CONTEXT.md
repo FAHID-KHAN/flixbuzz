@@ -12,7 +12,7 @@ FlixBuzz is a business website for selling subscription products such as Netflix
 4. Admin verifies payment/order manually.
 5. Admin delivers the subscription manually.
 
-There is intentionally no payment gateway or database in the current build.
+There is intentionally no payment gateway. Product and admin data are now stored in SQLite through the backend API.
 
 ## App Architecture
 
@@ -21,6 +21,8 @@ Main entry:
 ```text
 src/main.jsx
 src/App.jsx
+server/index.js
+server/database.js
 ```
 
 `src/App.jsx` handles routing by reading `window.location.pathname`:
@@ -33,11 +35,13 @@ src/App.jsx
 
 There is no React Router installed. Navigation uses regular anchor links.
 
+The frontend talks to the backend through `/api/*`. In local development, Vite proxies `/api` to `http://localhost:4000`.
+
 ## Key State
 
 State is held in `App.jsx`:
 
-- `products` - initialized from `localStorage` key `flixbuzz-products` when available, otherwise from `initialProducts`.
+- `products` - initialized from `initialProducts`, then replaced by `GET /api/products` when the API responds.
 - `selectedId` - selected product for hero/preview behavior.
 - `activeCategory` - catalog category filter.
 - `sortBy` - catalog sorting mode.
@@ -47,7 +51,8 @@ State is held in `App.jsx`:
 - `verification` - home page order verification form state.
 - `review` - review page form state.
 - `orders` - local in-memory checkout requests.
-- `adminPasscode` - browser-local admin passcode from `localStorage`.
+- `adminToken` - browser session token from `sessionStorage` after API login.
+- `adminConfigured` - loaded from `GET /api/admin/status`.
 - `isLoggedIn` - admin login status for the current app session.
 
 ## Data Files
@@ -74,13 +79,39 @@ src/data/brandLogos.js
 
 Product logos are currently loaded via Google favicon URLs. If logos fail to load or exact brand assets are required, replace this with local image assets.
 
-Admin catalog edits are currently saved in browser `localStorage` under:
+## Backend API
+
+Backend entry:
 
 ```text
-flixbuzz-products
+server/index.js
 ```
 
-Admins must click **Save catalog** in `/admin` to write price edits, availability edits, and newly added products to this key. After saving, changes show on the public website after navigating away from `/admin` or refreshing in the same browser. This is still browser-local and not shared across devices.
+SQLite layer:
+
+```text
+server/database.js
+```
+
+Default database file:
+
+```text
+data/flixbuzz.sqlite
+```
+
+API routes:
+
+```text
+GET  /api/health
+GET  /api/products
+GET  /api/admin/status
+POST /api/admin/login
+PUT  /api/admin/products
+```
+
+The products table is seeded from `initialProducts` when SQLite is empty.
+
+Admins must click **Save catalog** in `/admin` to write price edits, availability edits, and newly added products to SQLite. After saving, changes are available globally to customers through `GET /api/products`.
 
 ## Main Pages
 
@@ -140,15 +171,11 @@ Not linked from the public site. Available at `/admin`.
 
 There is no hardcoded admin password.
 
-On first login, `/admin` asks the user to create a passcode with at least 8 characters. It stores the passcode in browser `localStorage` as:
+On first login, `/admin` asks the user to create a passcode with at least 8 characters. The backend hashes that passcode with `crypto.scryptSync` and stores the hash/salt in SQLite.
 
-```text
-flixbuzz-admin-passcode
-```
+After login, the backend returns an in-memory session token. The frontend stores that token in `sessionStorage` as `flixbuzz-admin-token`.
 
-This is only a prototype/local convenience. It is not secure enough for production because the passcode lives in the browser and all admin behavior is client-side.
-
-Production admin should use server-side authentication and authorization.
+Production note: in-memory tokens are simple and reset on backend restart. For a bigger production system, use durable sessions or signed JWTs.
 
 ## Styling
 
@@ -199,20 +226,19 @@ If the business number changes, update:
 
 ## Current Limitations
 
-- No real backend.
-- No database.
-- Admin catalog edits are browser-local only.
+- Backend session tokens are in-memory.
+- SQLite needs a persistent volume in Kubernetes.
+- SQLite should use one backend writer replica.
 - No real order tracking persistence.
-- No real authentication.
 - No payment gateway.
 - No review approval system.
 - External brand logos may fail if favicon services are blocked.
 
 ## Recommended Next Steps
 
-1. Add a database for products, orders, and reviews.
-2. Replace local admin passcode with real authentication.
-3. Persist admin price/product edits in a real database.
+1. Add persistent order storage.
+2. Add review approval/persistence.
+3. Harden admin auth with JWT or durable sessions.
 4. Add order status lookup by order ID and phone.
 5. Add approved review publishing.
 6. Add environment variables for WhatsApp/contact configuration.
@@ -223,7 +249,8 @@ If the business number changes, update:
 
 ```bash
 npm install
-npm run dev
+npm run dev:api
+npm run dev:web
 npm run lint
 npm run build
 npm run preview

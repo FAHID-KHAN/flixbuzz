@@ -58,8 +58,8 @@ export default function AdminPage({
           </button>
           <small>
             {passcodeIsSet
-              ? 'This passcode is saved locally in this browser.'
-              : 'First login sets the admin passcode for this browser.'}
+              ? 'This passcode is verified by the backend API.'
+              : 'First login saves the admin passcode hash in SQLite.'}
           </small>
         </form>
       </main>

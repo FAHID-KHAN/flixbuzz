@@ -8,38 +8,13 @@ import ReviewPage from './pages/ReviewPage.jsx'
 import LoadingScreen from './components/LoadingScreen.jsx'
 import { durationLabels, initialProducts } from './data/products.js'
 
-const catalogStorageKey = 'flixbuzz-products'
+const adminTokenStorageKey = 'flixbuzz-admin-token'
 
-const loadSavedProducts = () => {
-  try {
-    const savedProducts = JSON.parse(
-      window.localStorage.getItem(catalogStorageKey) || '[]',
-    )
-
-    if (!Array.isArray(savedProducts) || savedProducts.length === 0) {
-      return initialProducts
-    }
-
-    const savedProductMap = new Map(
-      savedProducts.map((product) => [product.id, product]),
-    )
-    const initialProductIds = new Set(initialProducts.map((product) => product.id))
-    const mergedProducts = initialProducts.map((product) => ({
-      ...product,
-      ...savedProductMap.get(product.id),
-    }))
-    const customProducts = savedProducts.filter(
-      (product) => !initialProductIds.has(product.id),
-    )
-
-    return [...mergedProducts, ...customProducts]
-  } catch {
-    return initialProducts
-  }
-}
+const loadAdminToken = () =>
+  window.sessionStorage.getItem(adminTokenStorageKey) || ''
 
 function App() {
-  const [products, setProducts] = useState(loadSavedProducts)
+  const [products, setProducts] = useState(initialProducts)
   const [selectedId, setSelectedId] = useState(initialProducts[0].id)
   const [activeCategory, setActiveCategory] = useState('All')
   const [sortBy, setSortBy] = useState('featured')
@@ -63,16 +38,15 @@ function App() {
     message: '',
   })
   const [orders, setOrders] = useState([])
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [adminPasscode, setAdminPasscode] = useState(() => {
-    return window.localStorage.getItem('flixbuzz-admin-passcode') || ''
-  })
+  const [adminToken, setAdminToken] = useState(loadAdminToken)
+  const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(loadAdminToken()))
+  const [adminConfigured, setAdminConfigured] = useState(true)
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loginError, setLoginError] = useState('')
   const [hasCatalogChanges, setHasCatalogChanges] = useState(false)
   const [catalogSaveMessage, setCatalogSaveMessage] = useState(
-    'Catalog is loaded from saved browser data.',
+    'Catalog is loaded from the SQLite database.',
   )
   const [newProduct, setNewProduct] = useState({
     name: '',
@@ -87,6 +61,42 @@ function App() {
   useEffect(() => {
     window.localStorage.setItem('flixbuzz-theme', theme)
   }, [theme])
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const response = await fetch('/api/products')
+
+        if (!response.ok) {
+          throw new Error('Could not load products')
+        }
+
+        const data = await response.json()
+        setProducts(data.products)
+        setCatalogSaveMessage('Catalog is loaded from the SQLite database.')
+      } catch {
+        setCatalogSaveMessage('API unavailable. Showing bundled fallback catalog.')
+      }
+    }
+
+    const loadAdminStatus = async () => {
+      try {
+        const response = await fetch('/api/admin/status')
+
+        if (!response.ok) {
+          return
+        }
+
+        const data = await response.json()
+        setAdminConfigured(Boolean(data.configured))
+      } catch {
+        setAdminConfigured(true)
+      }
+    }
+
+    loadProducts()
+    loadAdminStatus()
+  }, [])
 
   useEffect(() => {
     if (!isLoading) {
@@ -220,38 +230,69 @@ function App() {
     setNewProduct({ name: '', category: 'Streaming', duration: 1, price: '' })
   }
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault()
     const trimmedPassword = password.trim()
 
-    if (!adminPasscode) {
-      if (trimmedPassword.length < 8) {
-        setLoginError('Use at least 8 characters to set the admin passcode.')
+    if (trimmedPassword.length < 8) {
+      setLoginError('Use at least 8 characters.')
+      return
+    }
+
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: trimmedPassword }),
+      })
+      const data = await response.json()
+
+      if (!response.ok) {
+        setLoginError(data.message || 'Admin login failed.')
         return
       }
 
-      window.localStorage.setItem('flixbuzz-admin-passcode', trimmedPassword)
-      setAdminPasscode(trimmedPassword)
+      window.sessionStorage.setItem(adminTokenStorageKey, data.token)
+      setAdminToken(data.token)
+      setAdminConfigured(true)
       setIsLoggedIn(true)
       setPassword('')
       setLoginError('')
       return
+    } catch {
+      setLoginError('API unavailable. Start the backend server and try again.')
     }
-
-    if (trimmedPassword === adminPasscode) {
-      setIsLoggedIn(true)
-      setPassword('')
-      setLoginError('')
-      return
-    }
-
-    setLoginError('Wrong admin passcode for this browser.')
   }
 
-  const handleSaveCatalog = () => {
-    window.localStorage.setItem(catalogStorageKey, JSON.stringify(products))
-    setHasCatalogChanges(false)
-    setCatalogSaveMessage('Catalog saved. Public website will use these prices.')
+  const handleSaveCatalog = async () => {
+    try {
+      const response = await fetch('/api/admin/products', {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ products }),
+      })
+      const data = await response.json()
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          window.sessionStorage.removeItem(adminTokenStorageKey)
+          setAdminToken('')
+          setIsLoggedIn(false)
+        }
+
+        setCatalogSaveMessage(data.message || 'Catalog save failed.')
+        return
+      }
+
+      setProducts(data.products)
+      setHasCatalogChanges(false)
+      setCatalogSaveMessage('Catalog saved to SQLite. Public website is updated.')
+    } catch {
+      setCatalogSaveMessage('API unavailable. Catalog was not saved.')
+    }
   }
 
   if (isLoading && route !== '/admin') {
@@ -272,7 +313,7 @@ function App() {
         loginError={loginError}
         newProduct={newProduct}
         orders={orders}
-        passcodeIsSet={Boolean(adminPasscode)}
+        passcodeIsSet={adminConfigured}
         password={password}
         products={products}
         setNewProduct={setNewProduct}
